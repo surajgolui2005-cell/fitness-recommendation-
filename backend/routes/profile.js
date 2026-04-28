@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authMiddleware');
 const Profile = require('../models/Profile');
+const openai = require('../config/openai');
 
 // ─── Fitness Logic Helpers ───────────────────────────────────────────────────
 
@@ -44,9 +45,9 @@ const adjustCalories = (tdee, goal) => {
 };
 
 /**
- * Generate a personalised diet plan
+ * Fallback: rule-based diet plan (used if GPT call fails)
  */
-const generateDietPlan = (goal, dietaryPreference) => {
+const generateDietPlanFallback = (goal, dietaryPreference) => {
   let plan = { breakfast: '', lunch: '', dinner: '', snacks: '' };
 
   if (dietaryPreference === 'vegan') {
@@ -60,14 +61,12 @@ const generateDietPlan = (goal, dietaryPreference) => {
     plan.dinner    = 'Paneer tikka masala with whole-wheat roti, steamed basmati & mint raita';
     plan.snacks    = 'Whey protein shake with milk or a small bowl of roasted chana & almonds';
   } else {
-    // non-vegetarian
     plan.breakfast = 'Three-egg spinach omelette with whole-grain toast, avocado & fresh orange juice';
     plan.lunch     = 'Grilled chicken breast (180 g) with roasted sweet potato wedges & steamed asparagus';
     plan.dinner    = 'Baked salmon (200 g) with quinoa pilaf, lemon herb sauce & roasted Brussels sprouts';
     plan.snacks    = 'Low-fat cottage cheese with cucumber sticks or a hard-boiled egg & whole-grain crackers';
   }
 
-  // Goal-specific snack adjustment
   if (goal === 'weight loss') {
     plan.snacks = 'Fresh cucumber & carrot sticks with hummus (keeps calories low)';
   } else if (goal === 'muscle gain') {
@@ -78,9 +77,50 @@ const generateDietPlan = (goal, dietaryPreference) => {
 };
 
 /**
- * Generate a personalised workout plan
+ * GPT-powered: generate a personalised diet plan using OpenAI
  */
-const generateWorkoutPlan = (goal, activityLevel) => {
+const generateDietPlan = async (goal, dietaryPreference, targetCalories, age, weight, height) => {
+  try {
+    const prompt = `You are a certified nutritionist. Create a detailed one-day personalized meal plan for a person with the following profile:
+- Goal: ${goal}
+- Dietary preference: ${dietaryPreference}
+- Daily calorie target: ${targetCalories} kcal
+- Age: ${age} years
+- Weight: ${weight} kg
+- Height: ${height} cm
+
+Return ONLY a valid JSON object (no explanation, no markdown) with exactly these 4 fields:
+{
+  "breakfast": "detailed breakfast description",
+  "lunch": "detailed lunch description",
+  "dinner": "detailed dinner description",
+  "snacks": "detailed snacks description"
+}
+
+Make each meal specific, realistic, and appropriate for the person's goal and dietary preference.`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+      max_tokens: 500,
+    });
+
+    const raw = completion.choices[0].message.content.trim();
+    // Strip markdown code fences if present
+    const jsonStr = raw.replace(/```json|```/g, '').trim();
+    const plan = JSON.parse(jsonStr);
+    return plan;
+  } catch (err) {
+    console.error('⚠️  OpenAI diet plan failed, using fallback:', err.message);
+    return generateDietPlanFallback(goal, dietaryPreference);
+  }
+};
+
+/**
+ * Fallback: rule-based workout plan (used if GPT call fails)
+ */
+const generateWorkoutPlanFallback = (goal, activityLevel) => {
   if (goal === 'weight loss') {
     return [
       { day: 'Mon / Wed / Fri', activity: 'HIIT Cardio', detail: '20–30 min high-intensity intervals (sprint 30 s, rest 30 s)' },
@@ -98,13 +138,48 @@ const generateWorkoutPlan = (goal, activityLevel) => {
       { day: 'Sunday',   activity: 'Rest',      detail: 'Full rest – adequate sleep is critical for muscle protein synthesis' },
     ];
   } else {
-    // maintenance
     return [
       { day: 'Mon / Thu', activity: 'Moderate Cardio',   detail: '30-min jog, cycling or swimming at comfortable aerobic pace' },
       { day: 'Tue / Fri', activity: 'Resistance Training', detail: 'Full-body compound lifts at moderate weight (3 × 12 reps)' },
       { day: 'Wednesday', activity: 'Yoga / Pilates',    detail: '45-min flexibility & core stability session' },
       { day: 'Weekend',   activity: 'Fun Activity',      detail: 'Hiking, sports, dancing – keep moving & enjoy it!' },
     ];
+  }
+};
+
+/**
+ * GPT-powered: generate a personalised 7-day workout plan using OpenAI
+ */
+const generateWorkoutPlan = async (goal, activityLevel, age, weight) => {
+  try {
+    const prompt = `You are a certified personal trainer. Create a detailed 7-day personalized workout plan for a person with the following profile:
+- Fitness goal: ${goal}
+- Activity level: ${activityLevel}
+- Age: ${age} years
+- Weight: ${weight} kg
+
+Return ONLY a valid JSON array (no explanation, no markdown) with exactly 7 objects, one per day:
+[
+  { "day": "Monday", "activity": "activity name", "detail": "specific exercises, sets, reps, duration" },
+  ...
+]
+
+Make each day specific and realistic for the person's goal and fitness level. Include rest days where appropriate.`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+      max_tokens: 700,
+    });
+
+    const raw = completion.choices[0].message.content.trim();
+    const jsonStr = raw.replace(/```json|```/g, '').trim();
+    const plan = JSON.parse(jsonStr);
+    return plan;
+  } catch (err) {
+    console.error('⚠️  OpenAI workout plan failed, using fallback:', err.message);
+    return generateWorkoutPlanFallback(goal, activityLevel);
   }
 };
 
@@ -170,8 +245,20 @@ router.get('/me', auth, async (req, res) => {
       return res.status(400).json({ msg: 'No profile found for this user' });
     }
 
-    const dietPlan   = generateDietPlan(profile.goal, profile.dietaryPreference);
-    const workoutPlan = generateWorkoutPlan(profile.goal, profile.activityLevel);
+    const dietPlan   = await generateDietPlan(
+      profile.goal,
+      profile.dietaryPreference,
+      profile.stats.tdee,
+      profile.age,
+      profile.weight,
+      profile.height
+    );
+    const workoutPlan = await generateWorkoutPlan(
+      profile.goal,
+      profile.activityLevel,
+      profile.age,
+      profile.weight
+    );
 
     res.json({ profile, recommendations: { dietPlan, workoutPlan } });
   } catch (err) {
