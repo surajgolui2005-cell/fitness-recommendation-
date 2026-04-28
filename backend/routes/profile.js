@@ -11,10 +11,12 @@ const axios   = require('axios');
  * Call the Python Flask ML microservice at port 5001
  * Returns { predictedPlanType, confidence, allProbabilities } or null on failure
  */
+const ML_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
+
 const callMLService = async (profile) => {
   try {
     const response = await axios.post(
-      'http://localhost:5001/predict',
+      `${ML_URL}/predict`,
       {
         age:               profile.age,
         gender:            profile.gender?.toLowerCase() ?? 'male',

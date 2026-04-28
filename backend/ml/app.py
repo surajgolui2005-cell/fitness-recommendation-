@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import numpy as np
+import pandas as pd
 import os
 
 app = Flask(__name__)
@@ -56,8 +57,11 @@ def predict():
         activity_level  = ACTIVITY_MAP.get(str(data.get('activityLevel', 'medium')).lower(), 1)
         dietary_pref    = DIET_MAP.get(str(data.get('dietaryPreference', 'non-vegetarian')).lower(), 2)
 
-        features = np.array([[age, gender, weight, height, bmi,
-                               activity_level, dietary_pref]])
+        features = pd.DataFrame([{
+            'age': age, 'gender': gender, 'weight': weight,
+            'height': height, 'bmi': bmi,
+            'activity_level': activity_level, 'dietary_preference': dietary_pref
+        }])
 
         prediction  = model.predict(features)[0]
         probabilities = model.predict_proba(features)[0]
@@ -79,4 +83,4 @@ def predict():
 # ── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     print('[START] FitPick ML Service running on http://localhost:5001')
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True, use_reloader=False)
