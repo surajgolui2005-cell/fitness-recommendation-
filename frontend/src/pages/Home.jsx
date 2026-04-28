@@ -29,12 +29,7 @@ const features = [
   },
 ];
 
-/* ─── Stat pill data ───────────────────────────────────────── */
-const stats = [
-  { label: 'Users Tracking',  value: '12K+' },
-  { label: 'Meals Planned',   value: '85K+' },
-  { label: 'Calories Saved',  value: '2M+'  },
-];
+
 
 const Home = () => {
   const isLoggedIn = !!localStorage.getItem('token');
@@ -74,18 +69,7 @@ const Home = () => {
         )}
       </div>
 
-      {/* ── Mini stats ── */}
-      <div
-        style={{ display: 'flex', gap: '2.5rem', marginBottom: '3rem', flexWrap: 'wrap', justifyContent: 'center' }}
-        className="animate-fade-up delay-400"
-      >
-        {stats.map((s, i) => (
-          <div key={i} style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '1.6rem', fontWeight: 900, letterSpacing: '-1px' }}>{s.value}</div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>{s.label}</div>
-          </div>
-        ))}
-      </div>
+
 
       {/* ── Feature cards ── */}
       <div className="features-grid animate-fade-up delay-400">

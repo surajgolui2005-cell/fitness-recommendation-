@@ -35,9 +35,13 @@ const Signup = () => {
       <div className="auth-card animate-scale-in">
         {/* Logo mark */}
         <div className="auth-logo">
-          <div className="auth-logo-mark">🏋️</div>
+          <img
+            src="/logo.png"
+            alt="FitPick"
+            style={{ height: '80px', width: 'auto', objectFit: 'contain', marginBottom: '0.5rem' }}
+          />
           <h1 className="auth-title">Create your account</h1>
-          <p className="auth-subtitle">Start your fitness journey with FitPulse</p>
+          <p className="auth-subtitle">Start your fitness journey with FitPick</p>
         </div>
 
         {/* Error banner */}

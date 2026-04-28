@@ -24,8 +24,11 @@ const Navbar = () => {
       <div className="navbar-inner">
         {/* Brand */}
         <Link to="/" className="navbar-brand" id="navbar-brand">
-          <div className="brand-icon">⚡</div>
-          FitPulse
+          <img
+            src="/logo.png"
+            alt="FitPick"
+            style={{ height: '150px', width: 'auto', objectFit: 'contain' }}
+          />
         </Link>
 
         {/* Links */}

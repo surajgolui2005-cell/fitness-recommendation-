@@ -1,6 +1,7 @@
 /* ============================================================
-   FitPulse — Global Design System
-   Dark premium UI with accent gradients and micro-animations
+   FitPick — Global Design System
+   Dark premium UI · FitPick Brand Palette
+   Deep Blue #0057FF · Bright Blue #00B8FF · Teal #00E0C2 · Mint #2DFF9A
    ============================================================ */
 
 /* ── Fonts ── */
@@ -8,31 +9,36 @@
 
 /* ── CSS Custom Properties ── */
 :root {
-  /* Palette */
-  --color-bg:         #0d1117;
-  --color-surface:    #161b22;
-  --color-surface-2:  #1c2332;
-  --color-border:     rgba(255,255,255,0.08);
-  --color-border-2:   rgba(255,255,255,0.14);
+  /* Backgrounds – true black as per brand */
+  --color-bg:         #000000;
+  --color-surface:    #0a0a0f;
+  --color-surface-2:  #111118;
+  --color-border:     rgba(0,183,255,0.10);
+  --color-border-2:   rgba(0,183,255,0.20);
 
   /* Text */
-  --color-text:       #e6edf3;
-  --color-text-muted: #8b949e;
-  --color-text-dim:   #6e7681;
+  --color-text:       #f0f4ff;
+  --color-text-muted: #7a8aaa;
+  --color-text-dim:   #4a5570;
 
-  /* Accent – electric violet → cyan */
-  --accent-1:  #7c3aed;   /* violet-600 */
-  --accent-2:  #06b6d4;   /* cyan-500  */
-  --accent-3:  #10b981;   /* emerald-500 */
-  --accent-warn: #f59e0b; /* amber-500  */
+  /* FitPick Brand Accent Palette */
+  --accent-1:  #0057FF;   /* Deep Blue     */
+  --accent-2:  #00B8FF;   /* Bright Blue   */
+  --accent-3:  #00E0C2;   /* Teal          */
+  --accent-4:  #2DFF9A;   /* Mint Green    */
+  --accent-warn:   #f59e0b;
   --accent-danger: #ef4444;
 
-  /* Gradients */
-  --grad-primary:  linear-gradient(135deg, #7c3aed, #06b6d4);
-  --grad-green:    linear-gradient(135deg, #059669, #10b981);
+  /* FitPick Gradients */
+  --grad-primary:  linear-gradient(135deg, #0057FF 0%, #00B8FF 40%, #00E0C2 70%, #2DFF9A 100%);
+  --grad-brand:    linear-gradient(90deg,  #0057FF, #00B8FF, #00E0C2, #2DFF9A);
+  --grad-blue:     linear-gradient(135deg, #0057FF, #00B8FF);
+  --grad-teal:     linear-gradient(135deg, #00B8FF, #00E0C2);
+  --grad-mint:     linear-gradient(135deg, #00E0C2, #2DFF9A);
+  --grad-green:    linear-gradient(135deg, #00E0C2, #2DFF9A);
   --grad-amber:    linear-gradient(135deg, #d97706, #f59e0b);
   --grad-red:      linear-gradient(135deg, #dc2626, #ef4444);
-  --grad-glow:     radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.25) 0%, transparent 70%);
+  --grad-glow:     radial-gradient(ellipse at 50% 0%, rgba(0,87,255,0.22) 0%, transparent 70%);
 
   /* Spacing */
   --radius-sm:  8px;
@@ -42,11 +48,11 @@
   --radius-pill: 9999px;
 
   /* Shadows */
-  --shadow-sm:  0 2px 8px rgba(0,0,0,0.35);
-  --shadow-md:  0 8px 24px rgba(0,0,0,0.45);
-  --shadow-lg:  0 20px 60px rgba(0,0,0,0.6);
-  --shadow-glow-accent: 0 0 30px rgba(124,58,237,0.4);
-  --shadow-glow-cyan:   0 0 30px rgba(6,182,212,0.35);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.5);
+  --shadow-md:  0 8px 24px rgba(0,0,0,0.6);
+  --shadow-lg:  0 20px 60px rgba(0,0,0,0.75);
+  --shadow-glow-accent: 0 0 32px rgba(0,87,255,0.45);
+  --shadow-glow-cyan:   0 0 32px rgba(0,224,194,0.35);
 
   /* Transitions */
   --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
@@ -80,7 +86,7 @@ a {
   transition: var(--transition);
 }
 
-a:hover { color: #67e8f9; }
+a:hover { color: var(--accent-3); }
 
 img { display: block; max-width: 100%; }
 
@@ -88,7 +94,7 @@ img { display: block; max-width: 100%; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-border-2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent-1); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-2); }
 
 /* ============================================================
    Layout
@@ -118,7 +124,7 @@ main.page-content {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(13,17,23,0.88);
+  background: rgba(0,0,0,0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--color-border);
@@ -131,7 +137,7 @@ main.page-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 160px;
 }
 
 .navbar-brand {
@@ -219,14 +225,15 @@ main.page-content {
 }
 
 .btn-primary {
-  background: var(--grad-primary);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(124,58,237,0.4);
+  background: var(--grad-brand);
+  color: #000;
+  font-weight: 700;
+  box-shadow: 0 4px 18px rgba(0,87,255,0.45);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(124,58,237,0.55);
+  box-shadow: 0 6px 28px rgba(0,224,194,0.5);
 }
 
 .btn-primary:active { transform: translateY(0); }
@@ -238,9 +245,9 @@ main.page-content {
 }
 
 .btn-outline:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: var(--accent-1);
-  color: var(--accent-1);
+  background: rgba(0,87,255,0.07);
+  border-color: var(--accent-2);
+  color: var(--accent-2);
 }
 
 .btn-ghost {
@@ -294,9 +301,9 @@ main.page-content {
 }
 
 .form-control:focus {
-  border-color: var(--accent-1);
-  background: rgba(124,58,237,0.05);
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  border-color: var(--accent-2);
+  background: rgba(0,87,255,0.06);
+  box-shadow: 0 0 0 3px rgba(0,184,255,0.18);
 }
 
 .form-control::placeholder { color: var(--color-text-dim); }
@@ -337,7 +344,7 @@ select.form-control option {
 
 .card-glow {
   box-shadow: var(--shadow-glow-accent);
-  border-color: rgba(124,58,237,0.3);
+  border-color: rgba(0,87,255,0.35);
 }
 
 /* ============================================================
@@ -401,10 +408,10 @@ select.form-control option {
   opacity: 0.6;
 }
 
-/* Color variants */
-.stat-violet .stat-card-value { color: #a78bfa; }
-.stat-cyan   .stat-card-value { color: #67e8f9; }
-.stat-green  .stat-card-value { color: #6ee7b7; }
+/* Color variants – FitPick palette */
+.stat-violet .stat-card-value { color: var(--accent-2); }
+.stat-cyan   .stat-card-value { color: var(--accent-3); }
+.stat-green  .stat-card-value { color: var(--accent-4); }
 .stat-amber  .stat-card-value { color: #fcd34d; }
 
 .stat-violet { border-left: 3px solid var(--accent-1); }
@@ -425,9 +432,9 @@ select.form-control option {
   letter-spacing: 0.04em;
 }
 
-.badge-violet { background: rgba(124,58,237,0.18); color: #a78bfa; }
-.badge-cyan   { background: rgba(6,182,212,0.15);  color: #67e8f9; }
-.badge-green  { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+.badge-violet { background: rgba(0,87,255,0.18);  color: var(--accent-2); }
+.badge-cyan   { background: rgba(0,184,255,0.15);  color: var(--accent-3); }
+.badge-green  { background: rgba(45,255,154,0.12); color: var(--accent-4); }
 .badge-amber  { background: rgba(245,158,11,0.15); color: #fcd34d; }
 .badge-red    { background: rgba(239,68,68,0.15);  color: #f87171; }
 
@@ -478,7 +485,7 @@ select.form-control option {
   position: absolute;
   width: 700px;
   height: 700px;
-  background: radial-gradient(ellipse, rgba(124,58,237,0.18) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(0,87,255,0.20) 0%, transparent 70%);
   top: -200px;
   left: 50%;
   transform: translateX(-50%);
@@ -490,7 +497,7 @@ select.form-control option {
   position: absolute;
   width: 400px;
   height: 400px;
-  background: radial-gradient(ellipse, rgba(6,182,212,0.12) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(0,224,194,0.14) 0%, transparent 70%);
   bottom: 0;
   right: 10%;
   pointer-events: none;
@@ -501,12 +508,12 @@ select.form-control option {
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 1rem;
-  background: rgba(124,58,237,0.12);
-  border: 1px solid rgba(124,58,237,0.3);
+  background: rgba(0,87,255,0.12);
+  border: 1px solid rgba(0,184,255,0.35);
   border-radius: var(--radius-pill);
   font-size: 0.8rem;
   font-weight: 600;
-  color: #a78bfa;
+  color: var(--accent-3);
   margin-bottom: 1.5rem;
   letter-spacing: 0.04em;
 }
@@ -563,9 +570,9 @@ select.form-control option {
 }
 
 .feature-card:hover {
-  border-color: rgba(124,58,237,0.4);
+  border-color: rgba(0,184,255,0.45);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(124,58,237,0.15);
+  box-shadow: 0 12px 40px rgba(0,87,255,0.18);
 }
 
 .feature-icon {
@@ -579,10 +586,10 @@ select.form-control option {
   margin-bottom: 1rem;
 }
 
-.feature-icon-violet { background: rgba(124,58,237,0.15); }
-.feature-icon-cyan   { background: rgba(6,182,212,0.15);  }
-.feature-icon-green  { background: rgba(16,185,129,0.15); }
-.feature-icon-amber  { background: rgba(245,158,11,0.15); }
+.feature-icon-violet { background: rgba(0,87,255,0.15); }
+.feature-icon-cyan   { background: rgba(0,184,255,0.15); }
+.feature-icon-green  { background: rgba(0,224,194,0.15); }
+.feature-icon-amber  { background: rgba(45,255,154,0.12); }
 
 .feature-card h3 {
   font-size: 0.95rem;
@@ -614,7 +621,7 @@ select.form-control option {
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(0,87,255,0.15) 0%, transparent 70%);
   top: -100px;
   right: -100px;
   pointer-events: none;
@@ -636,10 +643,10 @@ select.form-control option {
   content: '';
   position: absolute;
   top: -1px;
-  left: 20%;
-  right: 20%;
+  left: 10%;
+  right: 10%;
   height: 2px;
-  background: var(--grad-primary);
+  background: var(--grad-brand);
   border-radius: 2px;
 }
 
@@ -688,10 +695,10 @@ select.form-control option {
 
 .auth-divider a {
   font-weight: 600;
-  color: var(--accent-1);
+  color: var(--accent-3);
 }
 
-.auth-divider a:hover { color: #a78bfa; }
+.auth-divider a:hover { color: var(--accent-4); }
 
 /* ============================================================
    PROFILE SETUP
@@ -750,7 +757,10 @@ select.form-control option {
 .profile-form-section-title {
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--accent-1);
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 1rem;
@@ -792,14 +802,14 @@ select.form-control option {
 }
 
 .radio-card input:checked + .radio-card-label {
-  background: rgba(124,58,237,0.12);
-  border-color: rgba(124,58,237,0.5);
-  color: #a78bfa;
+  background: rgba(0,87,255,0.10);
+  border-color: rgba(0,184,255,0.5);
+  color: var(--accent-3);
 }
 
 .radio-card-label:hover {
-  border-color: var(--color-border-2);
-  background: rgba(255,255,255,0.05);
+  border-color: rgba(0,184,255,0.3);
+  background: rgba(0,87,255,0.05);
 }
 
 .radio-dot {
@@ -815,9 +825,9 @@ select.form-control option {
 }
 
 .radio-card input:checked + .radio-card-label .radio-dot {
-  border-color: var(--accent-1);
-  background: var(--accent-1);
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.25);
+  border-color: var(--accent-2);
+  background: var(--grad-blue);
+  box-shadow: 0 0 0 3px rgba(0,184,255,0.25);
 }
 
 /* ============================================================
@@ -961,8 +971,8 @@ select.form-control option {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(124,58,237,0.2);
-  color: #a78bfa;
+  background: var(--grad-blue);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -978,7 +988,7 @@ select.form-control option {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--accent-2);
+  color: var(--accent-3);
   margin-bottom: 0.2rem;
 }
 
@@ -1183,7 +1193,7 @@ select.form-control option {
   width: 36px;
   height: 36px;
   border: 3px solid var(--color-border);
-  border-top-color: var(--accent-1);
+  border-top-color: var(--accent-2);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
