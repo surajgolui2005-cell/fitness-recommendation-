@@ -23,8 +23,11 @@ const MEAL_ORDER = ['breakfast', 'lunch', 'snacks', 'dinner'];
 /* ─────────────────────────────────────────────────────────── */
 
 const Dashboard = () => {
-  const [data,    setData]    = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data,         setData]         = useState(null);
+  const [loading,      setLoading]      = useState(true);
+  const [feedback,     setFeedback]     = useState({ dietRating: null, workoutRating: null });
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [feedbackMsg,  setFeedbackMsg]  = useState('');
 
   useEffect(() => {
     api.get('/profile/me')
@@ -32,6 +35,20 @@ const Dashboard = () => {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const submitFeedback = async () => {
+    if (!feedback.dietRating || !feedback.workoutRating) {
+      setFeedbackMsg('Please rate both your diet and workout plan!');
+      return;
+    }
+    try {
+      await api.post('/feedback', feedback);
+      setFeedbackSent(true);
+      setFeedbackMsg('Thanks for your feedback! 🙌 Your rating helps improve recommendations for everyone.');
+    } catch (err) {
+      setFeedbackMsg('Could not save feedback. Please try again.');
+    }
+  };
 
   /* ── AI Generation Loading Screen ── */
   if (loading) {
@@ -271,6 +288,114 @@ const Dashboard = () => {
             * Plans are dynamically generated based on your profile. Update anytime.
           </p>
         </div>
+      </div>
+
+      {/* ────────── Feedback Rating ────────── */}
+      <div
+        className="animate-fade-up delay-400"
+        style={{
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-lg)',
+          padding: '1.5rem',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+          <span style={{ fontSize: '1.1rem' }}>⭐</span>
+          <h3 style={{ fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-text-muted)' }}>
+            Rate Your Plans
+          </h3>
+        </div>
+
+        {feedbackSent ? (
+          <div style={{
+            padding: '1rem',
+            background: 'rgba(45,255,154,0.08)',
+            border: '1px solid rgba(45,255,154,0.3)',
+            borderRadius: 'var(--radius-sm)',
+            color: '#2DFF9A',
+            fontSize: '0.9rem',
+            textAlign: 'center',
+          }}>
+            {feedbackMsg}
+          </div>
+        ) : (
+          <>
+            <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+              {/* Diet rating */}
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '0.5rem' }}>🥗 Diet Plan</p>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    id="diet-thumbs-up"
+                    onClick={() => setFeedback(f => ({ ...f, dietRating: 1 }))}
+                    style={{
+                      flex: 1, padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid',
+                      borderColor: feedback.dietRating === 1 ? '#2DFF9A' : 'var(--color-border)',
+                      background: feedback.dietRating === 1 ? 'rgba(45,255,154,0.12)' : 'transparent',
+                      color: feedback.dietRating === 1 ? '#2DFF9A' : 'var(--color-text-muted)',
+                      cursor: 'pointer', fontSize: '1.2rem', transition: 'var(--transition)',
+                    }}
+                  >👍</button>
+                  <button
+                    id="diet-thumbs-down"
+                    onClick={() => setFeedback(f => ({ ...f, dietRating: -1 }))}
+                    style={{
+                      flex: 1, padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid',
+                      borderColor: feedback.dietRating === -1 ? '#ef4444' : 'var(--color-border)',
+                      background: feedback.dietRating === -1 ? 'rgba(239,68,68,0.12)' : 'transparent',
+                      color: feedback.dietRating === -1 ? '#f87171' : 'var(--color-text-muted)',
+                      cursor: 'pointer', fontSize: '1.2rem', transition: 'var(--transition)',
+                    }}
+                  >👎</button>
+                </div>
+              </div>
+
+              {/* Workout rating */}
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '0.5rem' }}>💪 Workout Plan</p>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    id="workout-thumbs-up"
+                    onClick={() => setFeedback(f => ({ ...f, workoutRating: 1 }))}
+                    style={{
+                      flex: 1, padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid',
+                      borderColor: feedback.workoutRating === 1 ? '#2DFF9A' : 'var(--color-border)',
+                      background: feedback.workoutRating === 1 ? 'rgba(45,255,154,0.12)' : 'transparent',
+                      color: feedback.workoutRating === 1 ? '#2DFF9A' : 'var(--color-text-muted)',
+                      cursor: 'pointer', fontSize: '1.2rem', transition: 'var(--transition)',
+                    }}
+                  >👍</button>
+                  <button
+                    id="workout-thumbs-down"
+                    onClick={() => setFeedback(f => ({ ...f, workoutRating: -1 }))}
+                    style={{
+                      flex: 1, padding: '0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid',
+                      borderColor: feedback.workoutRating === -1 ? '#ef4444' : 'var(--color-border)',
+                      background: feedback.workoutRating === -1 ? 'rgba(239,68,68,0.12)' : 'transparent',
+                      color: feedback.workoutRating === -1 ? '#f87171' : 'var(--color-text-muted)',
+                      cursor: 'pointer', fontSize: '1.2rem', transition: 'var(--transition)',
+                    }}
+                  >👎</button>
+                </div>
+              </div>
+            </div>
+
+            {feedbackMsg && (
+              <p style={{ fontSize: '0.82rem', color: '#f87171', marginBottom: '0.75rem' }}>{feedbackMsg}</p>
+            )}
+
+            <button
+              id="submit-feedback-btn"
+              onClick={submitFeedback}
+              className="btn btn-primary"
+              style={{ width: '100%', padding: '0.75rem' }}
+            >
+              Submit Feedback
+            </button>
+          </>
+        )}
       </div>
 
       {/* ────────── Quick Tips ────────── */}
