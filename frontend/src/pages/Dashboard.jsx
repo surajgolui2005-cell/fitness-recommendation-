@@ -33,12 +33,85 @@ const Dashboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  /* ── Loading ── */
+  /* ── AI Generation Loading Screen ── */
   if (loading) {
     return (
-      <div className="loading-state">
-        <div className="spinner" />
-        <span>Loading your dashboard…</span>
+      <div style={{
+        minHeight: 'calc(100vh - 160px)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '2rem',
+        padding: '2rem',
+        textAlign: 'center',
+      }}>
+        {/* Animated logo glow */}
+        <div style={{
+          width: '80px',
+          height: '80px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #0057FF, #00B8FF, #00E0C2, #2DFF9A)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          animation: 'spin 1.5s linear infinite',
+          boxShadow: '0 0 40px rgba(0,184,255,0.4)',
+          flexShrink: 0,
+        }}>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            background: 'var(--color-bg)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.8rem',
+          }}>🤖</div>
+        </div>
+
+        {/* Title */}
+        <div>
+          <h2 style={{
+            fontSize: '1.4rem',
+            fontWeight: 800,
+            background: 'linear-gradient(90deg, #00B8FF, #2DFF9A)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            marginBottom: '0.5rem',
+          }}>
+            AI is personalizing your plan…
+          </h2>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+            GPT-4o-mini is analyzing your profile and generating your custom recommendations
+          </p>
+        </div>
+
+        {/* Step indicators */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%', maxWidth: '320px' }}>
+          {[
+            { icon: '📊', label: 'Calculating your calorie targets' },
+            { icon: '🥗', label: 'Generating personalized diet plan' },
+            { icon: '💪', label: 'Building your workout schedule' },
+          ].map((step, i) => (
+            <div key={i} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.75rem 1rem',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
+              animation: `fade-up 0.4s ease ${i * 0.15}s both`,
+            }}>
+              <span style={{ fontSize: '1.2rem' }}>{step.icon}</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>{step.label}</span>
+              <div className="spinner" style={{ width: 14, height: 14, borderWidth: 2, marginLeft: 'auto', flexShrink: 0 }} />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
