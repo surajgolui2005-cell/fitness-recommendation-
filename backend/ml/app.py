@@ -19,9 +19,9 @@ MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model.pkl')
 model = None
 if os.path.exists(MODEL_PATH):
     model = joblib.load(MODEL_PATH)
-    print('✅ Model loaded from model.pkl')
+    print('[OK] Model loaded from model.pkl')
 else:
-    print('⚠️  model.pkl not found. Run train_model.py first!')
+    print('[WARN] model.pkl not found. Run train_model.py first!')
 
 # ── Label maps (must match train_model.py) ────────────────────────────────────
 GENDER_MAP          = {'male': 0, 'female': 1}
@@ -47,18 +47,17 @@ def predict():
         return jsonify({'error': 'No JSON body received'}), 400
 
     try:
-        # Extract and encode features
+        # Extract and encode features (7 features — must match train_model.py)
         age             = float(data.get('age', 25))
         gender          = GENDER_MAP.get(str(data.get('gender', 'male')).lower(), 0)
         weight          = float(data.get('weight', 70))
         height          = float(data.get('height', 170))
         bmi             = float(data.get('bmi', weight / ((height / 100) ** 2)))
-        goal            = GOAL_MAP.get(str(data.get('goal', 'maintenance')).lower(), 1)
         activity_level  = ACTIVITY_MAP.get(str(data.get('activityLevel', 'medium')).lower(), 1)
         dietary_pref    = DIET_MAP.get(str(data.get('dietaryPreference', 'non-vegetarian')).lower(), 2)
 
         features = np.array([[age, gender, weight, height, bmi,
-                               goal, activity_level, dietary_pref]])
+                               activity_level, dietary_pref]])
 
         prediction  = model.predict(features)[0]
         probabilities = model.predict_proba(features)[0]
@@ -79,5 +78,5 @@ def predict():
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
-    print('🚀 FitPick ML Service running on http://localhost:5001')
+    print('[START] FitPick ML Service running on http://localhost:5001')
     app.run(host='0.0.0.0', port=5001, debug=True)

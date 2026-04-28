@@ -57,6 +57,7 @@ df = pd.DataFrame({
 OUT_PATH = os.path.join(os.path.dirname(__file__), 'fitness_data.csv')
 df.to_csv(OUT_PATH, index=False)
 
-print(f'✅ Dataset saved to {OUT_PATH}')
-print(f'   Shape: {df.shape}')
-print(f'   Plan distribution:\n{df["recommended_plan"].value_counts().rename({0:"weight loss", 1:"maintenance", 2:"muscle gain"})}')
+print(f'[OK] Dataset saved to {OUT_PATH}')
+print(f'     Shape: {df.shape}')
+print(f'     Plan distribution:')
+print(df["recommended_plan"].value_counts().rename({0:"weight loss", 1:"maintenance", 2:"muscle gain"}))

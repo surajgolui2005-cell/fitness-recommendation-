@@ -18,7 +18,7 @@ if not os.path.exists(DATA_PATH):
     raise FileNotFoundError('fitness_data.csv not found. Run generate_dataset.py first!')
 
 df = pd.read_csv(DATA_PATH)
-print(f'✅ Loaded dataset: {df.shape[0]} records')
+print(f'[OK] Loaded dataset: {df.shape[0]} records')
 
 # ── Features & target ─────────────────────────────────────────────────────────
 FEATURES = ['age', 'gender', 'weight', 'height', 'bmi', 'activity_level', 'dietary_preference']
@@ -41,14 +41,14 @@ model = RandomForestClassifier(
     class_weight='balanced',
 )
 model.fit(X_train, y_train)
-print('✅ Model trained!')
+print('[OK] Model trained!')
 
 # ── Evaluate ──────────────────────────────────────────────────────────────────
 y_pred   = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 
-print(f'\n📊 Accuracy: {accuracy * 100:.2f}%')
-print('\n📋 Classification Report:')
+print(f'\n[RESULTS] Accuracy: {accuracy * 100:.2f}%')
+print('\n[RESULTS] Classification Report:')
 print(classification_report(
     y_test, y_pred,
     target_names=['Weight Loss', 'Maintenance', 'Muscle Gain']
@@ -56,11 +56,11 @@ print(classification_report(
 
 # ── Feature importance ────────────────────────────────────────────────────────
 importances = pd.Series(model.feature_importances_, index=FEATURES).sort_values(ascending=False)
-print('🔍 Feature Importances:')
+print('[INFO] Feature Importances:')
 for feat, imp in importances.items():
     print(f'   {feat:<22} {imp:.4f}')
 
 # ── Save model ────────────────────────────────────────────────────────────────
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'model.pkl')
 joblib.dump(model, MODEL_PATH)
-print(f'\n✅ Model saved to {MODEL_PATH}')
+print(f'\n[OK] Model saved to {MODEL_PATH}')

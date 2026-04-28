@@ -1,8 +1,37 @@
 const express = require('express');
-const router = express.Router();
-const auth = require('../middleware/authMiddleware');
+const router  = express.Router();
+const auth    = require('../middleware/authMiddleware');
 const Profile = require('../models/Profile');
-const openai = require('../config/openai');
+const openai  = require('../config/openai');
+const axios   = require('axios');
+
+// ─── ML Service Helper ───────────────────────────────────────────────────────
+
+/**
+ * Call the Python Flask ML microservice at port 5001
+ * Returns { predictedPlanType, confidence, allProbabilities } or null on failure
+ */
+const callMLService = async (profile) => {
+  try {
+    const response = await axios.post(
+      'http://localhost:5001/predict',
+      {
+        age:               profile.age,
+        gender:            profile.gender?.toLowerCase() ?? 'male',
+        weight:            profile.weight,
+        height:            profile.height,
+        bmi:               profile.stats.bmi,
+        activityLevel:     profile.activityLevel,
+        dietaryPreference: profile.dietaryPreference,
+      },
+      { timeout: 3000 }   // 3 second timeout
+    );
+    return response.data;
+  } catch (err) {
+    console.warn('ML service unavailable, skipping prediction:', err.message);
+    return null;
+  }
+};
 
 // ─── Fitness Logic Helpers ───────────────────────────────────────────────────
 
@@ -245,22 +274,29 @@ router.get('/me', auth, async (req, res) => {
       return res.status(400).json({ msg: 'No profile found for this user' });
     }
 
-    const dietPlan   = await generateDietPlan(
-      profile.goal,
-      profile.dietaryPreference,
-      profile.stats.tdee,
-      profile.age,
-      profile.weight,
-      profile.height
-    );
-    const workoutPlan = await generateWorkoutPlan(
-      profile.goal,
-      profile.activityLevel,
-      profile.age,
-      profile.weight
-    );
+    const [dietPlan, workoutPlan, mlPrediction] = await Promise.all([
+      generateDietPlan(
+        profile.goal,
+        profile.dietaryPreference,
+        profile.stats.tdee,
+        profile.age,
+        profile.weight,
+        profile.height
+      ),
+      generateWorkoutPlan(
+        profile.goal,
+        profile.activityLevel,
+        profile.age,
+        profile.weight
+      ),
+      callMLService(profile),
+    ]);
 
-    res.json({ profile, recommendations: { dietPlan, workoutPlan } });
+    res.json({
+      profile,
+      recommendations: { dietPlan, workoutPlan },
+      mlPrediction: mlPrediction ?? { predictedPlanType: null, confidence: null, note: 'ML service offline' },
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
