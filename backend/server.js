@@ -30,8 +30,9 @@ const connectDB = async () => {
 connectDB();
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/profile', require('./routes/profile'));
+app.use('/api/auth',     require('./routes/auth'));
+app.use('/api/profile',  require('./routes/profile'));
+app.use('/api/feedback', require('./routes/feedback'));
 
 // Serve Frontend in Production / Static Files
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
